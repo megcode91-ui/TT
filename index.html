@@ -313,6 +313,821 @@
     gap: 6px;
     font-weight: 500;
   }
+  .action-btn:hover { transform: translateY(-1px); }
+  .clear-btn:hover {
+    background: rgba(239,68,68,0.15);
+    border-color: rgba(239,68,68,0.4);
+    color: #fca5a5;
+  }
+  .update-btn {
+    background: linear-gradient(135deg, var(--update), #0891b2);
+    border-color: var(--update);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(6,182,212,0.3);
+    position: relative;
+  }
+  .update-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(6,182,212,0.45);
+  }
+  .update-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .update-btn.loading { pointer-events: none; padding-left: 32px; }
+  .update-btn.loading::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 14px; height: 14px;
+    margin-top: -7px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .update-btn.done {
+    background: linear-gradient(135deg, var(--success), #059669);
+    border-color: var(--success);
+  }
+  .pending-badge {
+    background: rgba(236,72,153,0.15);
+    color: #f9a8d4;
+    border: 1px solid rgba(236,72,153,0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+  }
+  .empty { text-align: center; padding: 60px 20px; color: #cbd5e1; }
+  .empty-icon { font-size: 56px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-text { font-size: 16px; }
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), var(--accent));
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 20px; }
+    .grid { grid-template-columns: 1fr; gap: 16px; }
+    .card { padding: 20px; }
+    .name-ar { font-size: 17px; }
+    .contribution { font-size: 14.5px; }
+    .filter-btn { padding: 7px 12px; font-size: 12px; }
+    main { padding: 0 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <div class="logo">📚</div>
+      <h1>نظريات و منظرون</h1>
+      <span class="pending-badge" id="pendingBadge" style="display:none;">
+        <span>⚡</span>
+        <span id="pendingText">تحديث جديد متاح</span>
+      </span>
+    </div>
+    <div class="subtitle">أهم 100 منظر في علم التربية — سلسلة التكوين الذاتي في علم التربية</div>
+
+    <div class="stats">
+      <div class="stat">📊 الإجمالي: <strong id="totalCount">0</strong></div>
+      <div class="stat">✅ تمت المراجعة: <strong id="reviewedCount">0</strong></div>
+      <div class="stat">📝 المتبقي: <strong id="remainingCount">0</strong></div>
+      <button class="action-btn update-btn" id="updateBtn" title="تحديث البيانات من المصدر">
+        <span id="updateIcon">🔄</span>
+        <span id="updateLabel">تحديث</span>
+      </button>
+      <button class="action-btn clear-btn" id="clearBtn">🗑️ إعادة تعيين</button>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+
+    <div class="controls" style="margin-top:16px;">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="ابحث عن منظر أو نظرية...">
+      </div>
+      <div class="filter-btns">
+        <button class="filter-btn active" data-filter="all">الكل</button>
+        <button class="filter-btn" data-filter="reviewed">تمت المراجعة</button>
+        <button class="filter-btn" data-filter="pending">لم تُراجع</button>
+        <button class="filter-btn" data-filter="new">جديد ✨</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none;">
+    <div class="empty-icon">🔎</div>
+    <div class="empty-text">لا توجد نتائج مطابقة</div>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastText">تم التحديث بنجاح</span>
+</div>
+
+<script>
+// ===== رابط المصدر (مخفي عن المستخدم) =====
+const SOURCE_URL = 'https://megcode91-ui.github.io/TT/';
+
+// ===== البيانات الأساسية — مستخرجة من الملف الرسمي =====
+const baseTheorists = [
+  {id:1, ar:"جان بياجيه", en:"Jean Piaget", c:"النمو المعرفي والمراحل الأربعة"},
+  {id:2, ar:"ليف فيغوتسكي", en:"Lev Vygotsky", c:"النظرية الاجتماعية الثقافية ومنطقة النمو القريب"},
+  {id:3, ar:"إريك إريكسون", en:"Erik Erikson", c:"النمو النفسي-الاجتماعي عبر المراحل الثمانية"},
+  {id:4, ar:"لورانس كولبرغ", en:"Lawrence Kohlberg", c:"مراحل النمو الأخلاقي"},
+  {id:5, ar:"أرنولد جيزل", en:"Arnold Gesell", c:"نظرية النضج والجداول النمائية"},
+  {id:6, ar:"هنري والون", en:"Henri Wallon", c:"النمو النفسي-الحركي والعاطفي"},
+  {id:7, ar:"ماري أينسورث", en:"Mary Ainsworth", c:"نظرية التعلق وأنماطه"},
+  {id:8, ar:"جون بولبي", en:"John Bowlby", c:"نظرية التعلق والروابط العاطفية المبكرة"},
+  {id:9, ar:"كارول جيليجان", en:"Carol Gilligan", c:"أخلاق الرعاية"},
+  {id:10, ar:"إيفان بافلوف", en:"Ivan Pavlov", c:"الإشراط الكلاسيكي والاستجابة الشرطية"},
+  {id:11, ar:"جون ب. واطسون", en:"John B. Watson", c:"النظرية السلوكية وعلم النفس السلوكي"},
+  {id:12, ar:"ب. ف. سكينر", en:"B. F. Skinner", c:"الإشراط الإجرائي والتعزيز والعقاب"},
+  {id:13, ar:"إدوارد ثورندايك", en:"Edward Thorndike", c:"قانون الأثر ونظريات الربط"},
+  {id:14, ar:"ألبرت باندورا", en:"Albert Bandura", c:"التعلم الاجتماعي بالملاحظة والنمذجة"},
+  {id:15, ar:"جيروم برونر", en:"Jerome Bruner", c:"التعلم بالاكتشاف والسقالات التعليمية"},
+  {id:16, ar:"ديفيد أوزوبل", en:"David Ausubel", c:"التعلم المنظم ذي المعنى"},
+  {id:17, ar:"روبرت غانييه", en:"Robert Gagné", c:"شروط التعلم وهرم مراحل التعليم"},
+  {id:18, ar:"فولفغانغ كوهلر", en:"Wolfgang Köhler", c:"التعلم بالاستبصار (البصيرة)"},
+  {id:19, ar:"ماكس فيرثايمر", en:"Max Wertheimer", c:"الإشكاليات والتفكير المنتج"},
+  {id:20, ar:"كارل روجرز", en:"Carl Rogers", c:"التعلم المتمركز على المتعلم"},
+  {id:21, ar:"أنطونيو داماسيو", en:"Antonio Damasio", c:"فرضية العلامة الجسدية والعاطفة والقرار"},
+  {id:22, ar:"مايكل غازانيغا", en:"Michael Gazzaniga", c:"علم الأعصاب المعرفي وانقسام الدماغ"},
+  {id:23, ar:"روجر سبيري", en:"Roger Sperry", c:"التخصص الوظيفي لنصفي الدماغ"},
+  {id:24, ar:"إريك كاندل", en:"Eric Kandel", c:"الأسس البيولوجية للذاكرة والتعلم"},
+  {id:25, ar:"جوزيف ليدو", en:"Joseph LeDoux", c:"الدماغ العاطفي وإدراك الخوف"},
+  {id:26, ar:"كورت ليفين", en:"Kurt Lewin", c:"النظرية الدينامية والميدانية"},
+  {id:27, ar:"ليون فستنجر", en:"Leon Festinger", c:"نظرية التنافر المعرفي"},
+  {id:28, ar:"سولومون أش", en:"Solomon Asch", c:"التجربة المطابقة الاجتماعية"},
+  {id:29, ar:"ستانلي ميلغرام", en:"Stanley Milgram", c:"تجربة الطاعة للسلطة"},
+  {id:30, ar:"فيليب زيمباردو", en:"Philip Zimbardo", c:"تجربة سجن ستانفورد وتأثير الدور"},
+  {id:31, ar:"فريتز هايدر", en:"Fritz Heider", c:"نظرية الإسناد"},
+  {id:32, ar:"برنارد وينر", en:"Bernard Weiner", c:"نظرية الإسناد والدافعية"},
+  {id:33, ar:"إميل دوركايم", en:"Emile Durkheim", c:"الوظيفة الاجتماعية للتربية"},
+  {id:34, ar:"كارل ماركس", en:"Karl Marx", c:"الصراع الطبقي والمادية في التعليم"},
+  {id:35, ar:"ماكس فيبر", en:"Max Weber", c:"البيروقراطية والسلطة في التعليم"},
+  {id:36, ar:"بيير بورديو", en:"Pierre Bourdieu", c:"رأس المال الثقافي والجنس الاجتماعي"},
+  {id:37, ar:"باولو فريري", en:"Paulo Freire", c:"تعليم المقهورين والتعلم التحرري"},
+  {id:38, ar:"إيفان إيليتش", en:"Ivan Illich", c:"إلغاء المدرسة والمجتمع المدرسي"},
+  {id:39, ar:"بروس توكم", en:"Bruce Tuckman", c:"مراحل تطور المجموعة"},
+  {id:40, ar:"بنجامين بلوم", en:"Benjamin Bloom", c:"تصنيف الأهداف وتعلم Bloom"},
+  {id:41, ar:"لي كرونباخ", en:"Lee Cronbach", c:"معامل ألفا لثبات الاختبارات"},
+  {id:42, ar:"مايكل سكريفن", en:"Michael Scriven", c:"التقييم التكويني والإجرائي"},
+  {id:43, ar:"جون ديوي", en:"John Dewey", c:"التعلم بالخبرة والتجربة"},
+  {id:44, ar:"ماريا مونتيسوري", en:"Maria Montessori", c:"الطريقة المونتيسورية والبيئة المحضرة"},
+  {id:45, ar:"سلستان فريني", en:"Célestin Freinet", c:"الطباعة الحرة والبيئة المدرسية"},
+  {id:46, ar:"فيليب بيرينود", en:"Philippe Perrenoud", c:"المقاربة بالكفايات والتمثلات"},
+  {id:47, ar:"كزافييه روجيرز", en:"Xavier Roegiers", c:"البيداغوجيا بالإدماج"},
+  {id:48, ar:"إيف شوفار", en:"Yves Chevallard", c:"النقل الديداكتيكي"},
+  {id:49, ar:"غي بروسو", en:"Guy Brousseau", c:"نظرية الوضعيات الديداكتيكية"},
+  {id:50, ar:"جان هوساي", en:"Jean Houssaye", c:"المثلث الديداكتيكي"},
+  {id:51, ar:"روبرت سيلمان", en:"Robert Selman", c:"مراحل اتخاذ المنظور الاجتماعي"},
+  {id:52, ar:"هاينز فيرنر", en:"Heinz Werner", c:"المبدأ التقويضي للنمو"},
+  {id:53, ar:"ألكسندر لوريا", en:"Alexander Luria", c:"علم النفس العصبي النمائي"},
+  {id:54, ar:"باربل إنهلدر", en:"Bärbel Inhelder", c:"التفكير الصوري بالتواصل مع بياجيه"},
+  {id:55, ar:"روبرت سيغلر", en:"Robert Siegler", c:"نظرية المتغيرات المتداخلة في النمو المعرفي"},
+  {id:56, ar:"كورت فيشر", en:"Kurt Fischer", c:"نظرية المهارات الدينامية والنمو"},
+  {id:57, ar:"كلارك هل", en:"Clark Hull", c:"نظرية التخفيض الدافعي"},
+  {id:58, ar:"إدوارد تولمان", en:"Edward Tolman", c:"التعلم الهادفي والخرائط المعرفية"},
+  {id:59, ar:"كورت كوفكا", en:"Kurt Koffka", c:"مبادئ التنظيم الاستشعاري"},
+  {id:60, ar:"مالكولم نولز", en:"Malcolm Knowles", c:"الأندراجوجيا وتعلم الراشدين"},
+  {id:61, ar:"جورج سيمنز", en:"George Siemens", c:"النظرية الاتصالانية والتعلم الرقمي"},
+  {id:62, ar:"ستيفن داونز", en:"Stephen Downes", c:"التعلم الشبكي والمعرفة الموزعة"},
+  {id:63, ar:"إتيان وينغر", en:"Etienne Wenger", c:"مجتمعات الممارسة والتعلم بالموقع"},
+  {id:64, ar:"جون دارلي", en:"John Darley", c:"التأثير المنشر والمسؤولية المنتشرة"},
+  {id:65, ar:"بيب لاتانيه", en:"Bibb Latané", c:"الانتشار الاجتماعي وتشكل المسؤولية"},
+  {id:66, ar:"هارولد كيلي", en:"Harold Kelley", c:"نموذج الإسناد بالتباين المشترك"},
+  {id:67, ar:"جان بودريلار", en:"Jean Baudrillard", c:"المحاكاة والاستهلاك في المجتمع"},
+  {id:68, ar:"بول ويليس", en:"Paul Willis", c:"مقاومة الطبقة العمالية في المدرسة"},
+  {id:69, ar:"روبرت باليز", en:"Robert Bales", c:"تحليل التفاعل داخل المجموعة"},
+  {id:70, ar:"إليوت أرونسون", en:"Elliot Aronson", c:"أسلوب الفسيفساء (Jigsaw) للتعليم التعاوني"},
+  {id:71, ar:"ديفيد جونسون", en:"David Johnson", c:"التعلم التعاوني وبناء المهارات الاجتماعية"},
+  {id:72, ar:"روجر جونسون", en:"Roger Johnson", c:"التعلم التعاوني"},
+  {id:73, ar:"سبنسر كاغان", en:"Spencer Kagan", c:"البنى التعاونية"},
+  {id:74, ar:"روبرت ستايك", en:"Robert Stake", c:"التقييم الاستجابي"},
+  {id:75, ar:"إيغون غوبا", en:"Egon Guba", c:"التقييم الطبيعي"},
+  {id:76, ar:"يفونّا لينكولن", en:"Yvonna Lincoln", c:"التقييم البنائي"},
+  {id:77, ar:"ديفيد نيومان", en:"David Neuman", c:"التقييم التجريبي"},
+  {id:78, ar:"دونالد كامبل", en:"Donald Campbell", c:"التصميم الشبه تجريبي"},
+  {id:79, ar:"جوليان ستانلي", en:"Julian Stanley", c:"القياس التربوي"},
+  {id:80, ar:"صامويل ميسيك", en:"Samuel Messick", c:"الصدق البنائي"},
+  {id:81, ar:"رودولف شتاينر", en:"Rudolf Steiner", c:"التعلم الأنثروبوسوفي (فالدورف)"},
+  {id:82, ar:"أوفيد ديكروي", en:"Ovide Decroly", c:"مراكز الاهتمام والطريقة العالمية"},
+  {id:83, ar:"شالوم فيشر", en:"Shalom Fischer", c:"الدينامية التعليمية للمجتمع"},
+  {id:84, ar:"إليزابيث كوهن", en:"Elizabeth Cohen", c:"التعليم المركب والمجموعات المتعددة"},
+  {id:85, ar:"رايتشل لوتان", en:"Rachel Lotan", c:"التعلم التعاوني الفعّال"},
+  {id:86, ar:"روبرت سلافين", en:"Robert Slavin", c:"التعلم التعاوني STAD"},
+  {id:87, ar:"نيل ويب", en:"Neil Webb", c:"التفاعل الاجتماعي والتعلم بالنشاط"},
+  {id:88, ar:"تشارلز هادفيلد", en:"Charles Hadfield", c:"الألعاب التعليمية"},
+  {id:89, ar:"أندريا وولف", en:"Andrea Wolf", c:"التعلم القائم على المشروع"},
+  {id:90, ar:"روبرت ماغر", en:"Robert Mager", c:"صياغة الأهداف السلوكية"},
+  {id:91, ar:"والتر ديك", en:"Walter Dick", c:"نموذج ديك وكاري للتصميم التعليمي"},
+  {id:92, ar:"لو كاري", en:"Lou Carey", c:"نموذج ديك وكاري للتصميم التعليمي"},
+  {id:93, ar:"جيمس بوفام", en:"James Popham", c:"التدريس الموجه بالأهداف"},
+  {id:94, ar:"فيليب جاكسون", en:"Philip Jackson", c:"الحياة في الصف (المنهج الخفي)"},
+  {id:95, ar:"ميشيل دي فيليرز", en:"Michel De Villers", c:"المقاربة بالكفايات"},
+  {id:96, ar:"جاك تارديف", en:"Jacques Tardif", c:"المقاربة بالكفايات"},
+  {id:97, ar:"ماري كريستين", en:"Marie-Christine", c:"المقاربة بالكفايات"},
+  {id:98, ar:"ميشيل فيربون", en:"Michel Verbon", c:"العقد الديداكتيكي"},
+  {id:99, ar:"نيكول بالسي", en:"Nicole Balsai", c:"التحليل الديداكتيكي"},
+  {id:100, ar:"آلان مرسير", en:"Alain Mercier", c:"التحليل الديداكتيكي"}
+];
+
+// ===== حزمة التحديث الجديدة (5 منظرين تجريبيين) =====
+const updatePackage = {
+  version: "1.1.0",
+  items: [
+    {id:101, ar:"هوارد غاردنر", en:"Howard Gardner", c:"نظرية الذكاءات المتعددة (8 ذكاءات)"},
+    {id:102, ar:"ديفيد كولب", en:"David Kolb", c:"نظرية التعلم التجريبي ودورة التعلم الرباعية"},
+    {id:103, ar:"إدغار ديل", en:"Edgar Dale", c:"مخروط الخبرة والتعلم بالوسائط المتدرجة"},
+    {id:104, ar:"رالف تايلر", en:"Ralph Tyler", c:"نموذج تايلر لتطوير المنهج الدراسي (4 أسئلة)"},
+    {id:105, ar:"لورين أندرسون", en:"Lorin Anderson", c:"التصنيف المعرفي المراجع (بلوم الجديد)"}
+  ]
+};
+
+// ===== الحالة =====
+const STORAGE_KEY = 'theorists_reviewed_v1';
+const CACHE_KEY = 'theorists_data_cache_v1';
+
+let theorists = [...baseTheorists];
+let reviewed = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+let currentFilter = 'all';
+let currentSearch = '';
+
+// تحميل البيانات المخزنة من آخر تحديث ناجح
+const cachedData = localStorage.getItem(CACHE_KEY);
+if (cachedData) {
+  try {
+    const parsed = JSON.parse(cachedData);
+    if (Array.isArray(parsed) && parsed.length > theorists.length) {
+      theorists = parsed;
+    }
+  } catch(e) {}
+}
+
+// ===== عناصر الواجهة =====
+const grid = document.getElementById('grid');
+const empty = document.getElementById('empty');
+const searchInput = document.getElementById('searchInput');
+const filterBtns = document.querySelectorAll('.filter-btn');
+const totalCountEl = document.getElementById('totalCount');
+const reviewedCountEl = document.getElementById('reviewedCount');
+const remainingCountEl = document.getElementById('remainingCount');
+const progressFill = document.getElementById('progressFill');
+const clearBtn = document.getElementById('clearBtn');
+const updateBtn = document.getElementById('updateBtn');
+const updateIcon = document.getElementById('updateIcon');
+const updateLabel = document.getElementById('updateLabel');
+const pendingBadge = document.getElementById('pendingBadge');
+const pendingText = document.getElementById('pendingText');
+const toast = document.getElementById('toast');
+const toastIcon = document.getElementById('toastIcon');
+const toastText = document.getElementById('toastText');
+
+// ===== الدوال =====
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...reviewed]));
+}
+
+function updateStats() {
+  const total = theorists.length;
+  const r = reviewed.size;
+  totalCountEl.textContent = total;
+  reviewedCountEl.textContent = r;
+  remainingCountEl.textContent = total - r;
+  progressFill.style.width = ((r / total) * 100) + '%';
+}
+
+function showToast(icon, text, isError = false) {
+  toastIcon.textContent = icon;
+  toastText.textContent = text;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+function toggleReview(id) {
+  if (reviewed.has(id)) reviewed.delete(id);
+  else reviewed.add(id);
+  save();
+  updateStats();
+  render();
+}
+
+// ===== استخراج بيانات المنظرين من HTML المصدر =====
+function extractTheoristsFromHtml(html) {
+  const scriptRegex = /const\s+baseTheorists\s*=\s*(\[[\s\S]*?\]);/m;
+  const match = html.match(scriptRegex);
+  if (match && match[1]) {
+    try {
+      const data = new Function('return ' + match[1])();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch(e) {
+      console.warn('فشل تحليل البيانات:', e);
+    }
+  }
+  return null;
+}
+
+// ===== دالة التحديث (refresh) =====
+async function performUpdate() {
+  if (updateBtn.disabled) return;
+
+  updateBtn.classList.add('loading');
+  updateBtn.disabled = true;
+  updateIcon.textContent = '🔄';
+  updateLabel.textContent = 'جاري التحديث...';
+
+  try {
+    const cacheBuster = '?v=' + Date.now();
+    const response = await fetch(SOURCE_URL + cacheBuster, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+
+    if (!response.ok) throw new Error('فشل الاتصال');
+
+    const html = await response.text();
+    const newData = extractTheoristsFromHtml(html);
+
+    if (!newData) throw new Error('لم يتم العثور على بيانات');
+
+    const currentIds = new Set(theorists.map(t => t.id));
+    const newItems = newData.filter(t => !currentIds.has(t.id));
+
+    if (newItems.length > 0) {
+      const marked = newItems.map(t => ({...t, isNew: true}));
+      theorists = [...theorists, ...marked];
+      localStorage.setItem(CACHE_KEY, JSON.stringify(theorists));
+
+      updateBtn.classList.remove('loading');
+      updateBtn.classList.add('done');
+      updateIcon.textContent = '✓';
+      updateLabel.textContent = 'تم التحديث';
+      pendingBadge.style.display = 'none';
+
+      updateStats();
+      render();
+      showToast('✅', `تم التحديث — أُضيف ${newItems.length} منظر(ين) جديد(ين)`);
+    } else {
+      updateBtn.classList.remove('loading');
+      updateBtn.classList.add('done');
+      updateIcon.textContent = '✓';
+      updateLabel.textContent = 'محدّث';
+      showToast('ℹ️', 'البيانات محدّثة بالفعل — لا توجد إضافات جديدة');
+    }
+
+    setTimeout(() => {
+      updateBtn.classList.remove('done');
+      updateBtn.disabled = false;
+      updateIcon.textContent = '🔄';
+      updateLabel.textContent = 'تحديث';
+    }, 3500);
+
+  } catch (err) {
+    console.error('خطأ التحديث:', err);
+    updateBtn.classList.remove('loading');
+    updateBtn.disabled = false;
+    updateIcon.textContent = '🔄';
+    updateLabel.textContent = 'تحديث';
+    showToast('⚠️', 'تعذر الاتصال — جاري إعادة تحميل الصفحة...', true);
+    setTimeout(() => window.location.reload(), 1500);
+  }
+}
+
+function getNewIds() {
+  return new Set(theorists.filter(t => t.isNew).map(t => t.id));
+}
+
+function render() {
+  const q = currentSearch.trim().toLowerCase();
+  const newIds = getNewIds();
+
+  const filtered = theorists.filter(t => {
+    let matchesFilter = false;
+    if (currentFilter === 'all') matchesFilter = true;
+    else if (currentFilter === 'reviewed') matchesFilter = reviewed.has(t.id);
+    else if (currentFilter === 'pending') matchesFilter = !reviewed.has(t.id);
+    else if (currentFilter === 'new') matchesFilter = newIds.has(t.id);
+
+    const matchesSearch = !q ||
+      t.ar.toLowerCase().includes(q) ||
+      t.en.toLowerCase().includes(q) ||
+      t.c.toLowerCase().includes(q) ||
+      String(t.id) === q;
+    return matchesFilter && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map(t => {
+    const isRev = reviewed.has(t.id);
+    const isNew = !!t.isNew;
+    const classes = ['card'];
+    if (isRev) classes.push('reviewed');
+    if (isNew) classes.push('new-entry');
+    return `
+      <div class="${classes.join(' ')}">
+        ${isNew ? '<span class="new-badge">✨ جديد</span>' : ''}
+        <div class="card-head">
+          <div class="num">${t.id}</div>
+          <div class="names">
+            <div class="name-ar">${t.ar}</div>
+            <div class="name-en">${t.en}</div>
+          </div>
+        </div>
+        <div class="contribution">${t.c}</div>
+        <div class="card-foot">
+          <button class="review-btn" data-id="${t.id}">
+            <span class="check">${isRev ? '✓' : ''}</span>
+            <span>${isRev ? 'تمت المراجعة' : 'وضع علامة مراجعة'}</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('.review-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleReview(parseInt(btn.dataset.id)));
+  });
+}
+
+// ===== الأحداث =====
+searchInput.addEventListener('input', e => {
+  currentSearch = e.target.value;
+  render();
+});
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+updateBtn.addEventListener('click', performUpdate);
+
+clearBtn.addEventListener('click', () => {
+  if (confirm('هل تريد فعلاً إعادة تعيين جميع علامات المراجعة؟')) {
+    reviewed.clear();
+    save();
+    updateStats();
+    render();
+    showToast('🗑️', 'تم إعادة تعيين المراجعة');
+  }
+});
+
+// ===== التهيئة =====
+const newIds = getNewIds();
+if (newIds.size > 0) {
+  pendingBadge.style.display = 'inline-flex';
+  pendingText.textContent = `${newIds.size} عنصر جديد ✨`;
+} else {
+  pendingBadge.style.display = 'none';
+}
+
+updateStats();
+render();
+</script>
+
+</body>
+</html>
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner { max-width: 1400px; margin: 0 auto; }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #6366f1, #f59e0b);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.4);
+  }
+  h1 { color: #fff; font-size: 26px; font-weight: 700; }
+  .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 18px; }
+  .stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  .stat {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 16px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat strong {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+  .search-box { flex: 1; min-width: 220px; position: relative; }
+  .search-box input {
+    width: 100%;
+    padding: 12px 44px 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.95);
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s;
+  }
+  .search-box input:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
+  }
+  .search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+  }
+  .filter-btns {
+    display: flex;
+    gap: 6px;
+    background: rgba(255,255,255,0.08);
+    padding: 4px;
+    border-radius: 10px;
+  }
+  .filter-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .filter-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.4);
+  }
+  .filter-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+  }
+  main { max-width: 1400px; margin: 30px auto; padding: 0 24px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 26px 28px;
+    box-shadow: var(--shadow);
+    position: relative;
+    transition: all 0.25s;
+    border: 2px solid transparent;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary), var(--accent));
+    transition: width 0.25s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+  .card:hover::before { width: 7px; }
+  .card.reviewed {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    border-color: #86efac;
+  }
+  .card.reviewed::before {
+    background: linear-gradient(180deg, var(--success), #059669);
+  }
+  .card.new-entry {
+    border-color: #f9a8d4;
+    background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%);
+    animation: slideIn 0.5s ease-out;
+  }
+  .card.new-entry::before {
+    background: linear-gradient(180deg, var(--new), #be185d);
+  }
+  .card.new-entry.reviewed {
+    background: linear-gradient(135deg, #f0fdf4 0%, #fdf2f8 100%);
+    border-color: #86efac;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .new-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, var(--new), #be185d);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(236,72,153,0.35);
+    letter-spacing: 0.3px;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .num {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 17px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(99,102,241,0.25);
+  }
+  .card.reviewed .num {
+    background: linear-gradient(135deg, var(--success), #059669);
+    box-shadow: 0 4px 10px rgba(16,185,129,0.25);
+  }
+  .card.new-entry .num {
+    background: linear-gradient(135deg, var(--new), #be185d);
+    box-shadow: 0 4px 10px rgba(236,72,153,0.25);
+  }
+  .names { flex: 1; min-width: 0; }
+  .name-ar {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .name-en {
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    direction: ltr;
+    text-align: right;
+  }
+  .contribution {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15.5px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .card.reviewed .contribution {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+  .card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .review-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-light);
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .review-btn:hover {
+    border-color: var(--success);
+    color: var(--success);
+    transform: scale(1.02);
+  }
+  .card.reviewed .review-btn {
+    background: var(--success);
+    color: #fff;
+    border-color: var(--success);
+  }
+  .review-btn .check {
+    width: 18px; height: 18px;
+    border: 2px solid currentColor;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .card.reviewed .review-btn .check {
+    background: #fff;
+    color: var(--success);
+  }
+  .action-btn {
+    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12.5px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
   .action-btn:hover {
     transform: translateY(-1px);
   }
