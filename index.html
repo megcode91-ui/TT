@@ -4,36 +4,999 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نظريات و منظرون — أهم 100 منظر في علم التربية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-naskh-arabic@5.0.0/index.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-arabic@5.0.0/index.css">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0f172a;
-    --bg-2: #1e293b;
-    --card: #ffffff;
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --accent: #f59e0b;
-    --success: #10b981;
-    --text: #1e293b;
-    --text-light: #64748b;
-    --border: #e2e8f0;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --new: #ec4899;
-    --update: #06b6d4;
+    --red: #c8102e;
+    --red-dark: #9b0c23;
+    --red-soft: #fee2e2;
+    --black: #0a0a0a;
+    --ink: #1a1a1a;
+    --white: #ffffff;
+    --paper: #fafaf7;
+    --paper-2: #f3f1ec;
+    --muted: #6b6b6b;
   }
+  html, body { background: var(--paper); }
   body {
-    font-family: 'Noto Sans Arabic', system-ui, sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
+    font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', system-ui, serif;
+    color: var(--ink);
     min-height: 100vh;
-    color: var(--text);
     padding-bottom: 60px;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.04) 1px, transparent 0);
+    background-size: 24px 24px;
   }
+
+  /* ===== HEADER - مضغوط ===== */
   header {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 28px 20px;
+    background: var(--black);
+    color: var(--white);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--red);
+  }
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 14px 24px 12px;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--white);
+    background: var(--red);
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    line-height: 1;
+    box-shadow: 3px 3px 0 var(--white);
+    flex-shrink: 0;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--white);
+    font-family: 'Noto Naskh Arabic', serif;
+  }
+  h1 .dot {
+    color: var(--red);
+    display: inline-block;
+    margin: 0 3px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 12px;
+    margin: 0 0 10px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+  }
+  .subtitle::before {
+    content: '—';
+    color: var(--red);
+    margin-left: 6px;
+  }
+
+  /* Stats row - مضغوط */
+  .stats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .stat {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    color: var(--white);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+  }
+  .stat::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--red);
+    border-radius: 50%;
+  }
+  .stat strong {
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Noto Naskh Arabic', serif;
+    min-width: 24px;
+    text-align: center;
+  }
+  .stat.accent {
+    border-color: var(--red);
+    background: rgba(200, 16, 46, 0.1);
+  }
+
+  .action-btn {
+    padding: 7px 14px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: transparent;
+    color: var(--white);
+    cursor: pointer;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .action-btn:hover {
+    background: var(--white);
+    color: var(--black);
+  }
+  .update-btn {
+    background: var(--red);
+    border-color: var(--red);
+  }
+  .update-btn:hover {
+    background: var(--white);
+    color: var(--red);
+  }
+  .update-btn.loading { pointer-events: none; opacity: 0.7; }
+  .update-btn.loading::after {
+    content: '';
+    width: 10px; height: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .update-btn.done {
+    background: var(--white);
+    border-color: var(--white);
+    color: var(--black);
+  }
+  .clear-btn:hover {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* Progress - مضغوط */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .progress-label {
+    color: #888;
+    font-size: 11px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    white-space: nowrap;
+  }
+  .progress-label strong { color: var(--red); font-size: 13px; }
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Controls - مضغوط */
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-box {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 9px 38px 9px 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.04);
+    color: var(--white);
+    font-family: 'Noto Sans Arabic', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .search-box input::placeholder { color: #666; }
+  .search-box input:focus {
+    background: var(--white);
+    color: var(--black);
+    border-color: var(--red);
+  }
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    font-size: 14px;
+  }
+  .filter-btns {
+    display: flex;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .filter-btn {
+    padding: 8px 14px;
+    border: none;
+    border-left: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .filter-btn:last-child { border-left: none; }
+  .filter-btn.active {
+    background: var(--red);
+    color: var(--white);
+  }
+  .filter-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.08);
+    color: var(--white);
+  }
+
+  /* ===== MAIN ===== */
+  main {
+    max-width: 1400px;
+    margin: 24px auto 0;
+    padding: 0 24px;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--black);
+    position: relative;
+  }
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 60px;
+    height: 2px;
+    background: var(--red);
+  }
+  .section-title h2 {
+    font-size: 18px;
+    font-weight: 900;
+    font-family: 'Noto Naskh Arabic', serif;
+    color: var(--black);
+  }
+  .section-title .count {
+    background: var(--black);
+    color: var(--white);
+    padding: 3px 10px;
+    font-size: 12px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    font-weight: 600;
+  }
+  .section-title .deco {
+    margin-right: auto;
+    display: flex;
+    gap: 3px;
+  }
+  .section-title .deco span {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+  }
+  .section-title .deco span:nth-child(2) { background: var(--black); }
+  .section-title .deco span:nth-child(3) { background: var(--red); opacity: 0.5; }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 20px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--white);
+    border: 2px solid var(--black);
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 3px;
+    background: var(--red);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+  }
+  .card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 var(--black);
+  }
+  .card:hover::before { width: 100%; }
+
+  .card.reviewed::before {
+    background: var(--red);
+    width: 100%;
+  }
+  .card.new-entry {
+    border-color: var(--red);
+  }
+  .card.new-entry::before { background: var(--red); width: 100%; }
+
+  /* Card Header */
+  .card-head {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--black);
+    background: var(--paper-2);
+  }
+  .num {
+    background: var(--black);
+    color: var(--white);
+    padding: 12px 16px;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 20px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    position: relative;
+  }
+  .num::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--red);
+  }
+  .card.reviewed .num { background: var(--red); }
+  .card.reviewed .num::after { background: var(--black); }
+  .card.new-entry .num { background: var(--red); }
+  .card.new-entry .num::after { background: var(--black); }
+
+  .names {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  .name-ar {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--black);
+    margin-bottom: 2px;
+    line-height: 1.3;
+    font-family: 'Noto Naskh Arabic', serif;
+  }
+  .name-en {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    direction: ltr;
+    text-align: right;
+    font-family: 'Noto Sans Arabic', sans-serif;
+  }
+
+  /* Card Body */
+  .contribution {
+    padding: 16px 20px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink);
+    flex: 1;
+    position: relative;
+    font-family: 'Noto Naskh Arabic', serif;
+  }
+  .contribution::before {
+    content: '"';
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    font-size: 40px;
+    color: var(--red);
+    opacity: 0.12;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  /* Card Footer */
+  .card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid var(--black);
+    background: var(--paper-2);
+  }
+  .review-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border: 2px solid var(--black);
+    background: var(--white);
+    cursor: pointer;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--black);
+    transition: all 0.2s;
+  }
+  .review-btn:hover {
+    background: var(--black);
+    color: var(--white);
+  }
+  .review-btn .check {
+    width: 14px; height: 14px;
+    border: 2px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+  }
+  .card.reviewed .review-btn {
+    background: var(--red);
+    color: var(--white);
+    border-color: var(--red);
+  }
+  .card.reviewed .review-btn:hover {
+    background: var(--red-dark);
+    border-color: var(--red-dark);
+  }
+  .card.reviewed .review-btn .check {
+    background: var(--white);
+    color: var(--red);
+    border-color: var(--white);
+  }
+
+  /* Stamp */
+  .stamp {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--red);
+    font-weight: 900;
+    font-size: 10px;
+    transform: rotate(-15deg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    text-align: center;
+    line-height: 1.2;
+    z-index: 3;
+    background: rgba(255,255,255,0.9);
+  }
+  .card.reviewed .stamp { opacity: 0.8; }
+
+  /* New badge */
+  .new-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--red);
+    color: var(--white);
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 8px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    letter-spacing: 1px;
+    z-index: 3;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .card.reviewed .new-badge { top: 85px; }
+
+  /* Pending badge */
+  .pending-badge {
+    background: var(--red);
+    color: var(--white);
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 6px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Empty */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    border: 2px dashed var(--black);
+    background: var(--white);
+  }
+  .empty-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    color: var(--red);
+  }
+  .empty-text {
+    font-size: 16px;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-weight: 700;
+    color: var(--black);
+  }
+  .empty-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--black);
+    color: var(--white);
+    padding: 12px 20px;
+    border: 2px solid var(--red);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Noto Sans Arabic', sans-serif;
+    box-shadow: 4px 4px 0 var(--red);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast .toast-icon {
+    width: 20px; height: 20px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+
+  /* Footer deco */
+  .footer-deco {
+    max-width: 1400px;
+    margin: 40px auto 0;
+    padding: 20px 24px;
+    text-align: center;
+    border-top: 2px solid var(--black);
+    position: relative;
+  }
+  .footer-deco::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 80px;
+    height: 2px;
+    background: var(--red);
+  }
+  .footer-deco p {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Noto Sans Arabic', sans-serif;
+  }
+  .footer-deco .marks {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .footer-deco .marks span {
+    width: 8px; height: 8px;
+    background: var(--black);
+  }
+  .footer-deco .marks span:nth-child(2) { background: var(--red); border-radius: 50%; }
+  .footer-deco .marks span:nth-child(3) { background: var(--black); transform: rotate(45deg); }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  }
+  @media (max-width: 600px) {
+    .header-inner { padding: 12px 16px 10px; }
+    h1 { font-size: 18px; }
+    .logo { width: 32px; height: 32px; font-size: 18px; }
+    main { padding: 0 16px; }
+    .grid { grid-template-columns: 1fr; gap: 16px; }
+    .name-ar { font-size: 16px; }
+    .contribution { font-size: 14px; padding: 14px 16px; }
+    .filter-btn { padding: 7px 10px; font-size: 11px; }
+    .stat { padding: 5px 10px; font-size: 11px; }
+    .stat strong { font-size: 14px; }
+    .stamp { width: 50px; height: 50px; font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <div class="logo">ظ</div>
+      <h1>نظريات <span class="dot">•</span> منظرون</h1>
+      <span class="pending-badge" id="pendingBadge" style="display:none;">
+        <span>●</span>
+        <span id="pendingText">تحديث جديد</span>
+      </span>
+    </div>
+    <div class="subtitle">أهم 100 منظر في علم التربية — سلسلة التكوين الذاتي</div>
+
+    <div class="stats">
+      <div class="stat">الإجمالي <strong id="totalCount">0</strong></div>
+      <div class="stat accent">المراجعة <strong id="reviewedCount">0</strong></div>
+      <div class="stat">المتبقي <strong id="remainingCount">0</strong></div>
+      <button class="action-btn update-btn" id="updateBtn" title="تحديث">
+        <span id="updateIcon">↻</span>
+        <span id="updateLabel">تحديث</span>
+      </button>
+      <button class="action-btn clear-btn" id="clearBtn">إعادة تعيين</button>
+    </div>
+
+    <div class="progress-wrap">
+      <span class="progress-label">الإنجاز: <strong id="progressPercent">0%</strong></span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="ابحث عن منظر، نظرية، أو رقم...">
+      </div>
+      <div class="filter-btns">
+        <button class="filter-btn active" data-filter="all">الكل</button>
+        <button class="filter-btn" data-filter="reviewed">المراجعة</button>
+        <button class="filter-btn" data-filter="pending">لم تُراجع</button>
+        <button class="filter-btn" data-filter="new">جديد</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="section-title">
+    <h2>قائمة المنظرين</h2>
+    <span class="count" id="displayCount">0</span>
+    <div class="deco">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none;">
+    <div class="empty-icon">◌</div>
+    <div class="empty-text">لا توجد نتائج مطابقة</div>
+    <div class="empty-sub">جرب كلمة بحث أخرى أو غيّر الفلتر</div>
+  </div>
+
+  <div class="footer-deco">
+    <div class="marks"><span></span><span></span><span></span></div>
+    <p>سلسلة التكوين الذاتي في علم التربية — إصدار 1.1</p>
+  </div>
+</main>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastText">تم التحديث بنجاح</span>
+</div>
+
+<script>
+const SOURCE_URL = 'https://megcode91-ui.github.io/TT/';
+
+const baseTheorists = [
+  {id:1, ar:"جان بياجيه", en:"Jean Piaget", c:"النمو المعرفي والمراحل الأربعة"},
+  {id:2, ar:"ليف فيغوتسكي", en:"Lev Vygotsky", c:"النظرية الاجتماعية الثقافية ومنطقة النمو القريب"},
+  {id:3, ar:"إريك إريكسون", en:"Erik Erikson", c:"النمو النفسي-الاجتماعي عبر المراحل الثمانية"},
+  {id:4, ar:"لورانس كولبرغ", en:"Lawrence Kohlberg", c:"مراحل النمو الأخلاقي"},
+  {id:5, ar:"أرنولد جيزل", en:"Arnold Gesell", c:"نظرية النضج والجداول النمائية"},
+  {id:6, ar:"هنري والون", en:"Henri Wallon", c:"النمو النفسي-الحركي والعاطفي"},
+  {id:7, ar:"ماري أينسورث", en:"Mary Ainsworth", c:"نظرية التعلق وأنماطه"},
+  {id:8, ar:"جون بولبي", en:"John Bowlby", c:"نظرية التعلق والروابط العاطفية المبكرة"},
+  {id:9, ar:"كارول جيليجان", en:"Carol Gilligan", c:"أخلاق الرعاية"},
+  {id:10, ar:"إيفان بافلوف", en:"Ivan Pavlov", c:"الإشراط الكلاسيكي والاستجابة الشرطية"}
+];
+
+const STORAGE_KEY = 'theorists_reviewed_v2';
+const CACHE_KEY = 'theorists_data_cache_v2';
+
+let theorists = [...baseTheorists];
+let reviewed = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+let currentFilter = 'all';
+let currentSearch = '';
+
+const cachedData = localStorage.getItem(CACHE_KEY);
+if (cachedData) {
+  try {
+    const parsed = JSON.parse(cachedData);
+    if (Array.isArray(parsed) && parsed.length > theorists.length) {
+      theorists = parsed;
+    }
+  } catch(e) {}
+}
+
+const grid = document.getElementById('grid');
+const empty = document.getElementById('empty');
+const searchInput = document.getElementById('searchInput');
+const filterBtns = document.querySelectorAll('.filter-btn');
+const totalCountEl = document.getElementById('totalCount');
+const reviewedCountEl = document.getElementById('reviewedCount');
+const remainingCountEl = document.getElementById('remainingCount');
+const progressFill = document.getElementById('progressFill');
+const progressPercent = document.getElementById('progressPercent');
+const displayCount = document.getElementById('displayCount');
+const clearBtn = document.getElementById('clearBtn');
+const updateBtn = document.getElementById('updateBtn');
+const updateIcon = document.getElementById('updateIcon');
+const updateLabel = document.getElementById('updateLabel');
+const pendingBadge = document.getElementById('pendingBadge');
+const pendingText = document.getElementById('pendingText');
+const toast = document.getElementById('toast');
+const toastIcon = document.getElementById('toastIcon');
+const toastText = document.getElementById('toastText');
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...reviewed]));
+}
+
+function updateStats() {
+  const total = theorists.length;
+  const r = reviewed.size;
+  const pct = total > 0 ? Math.round((r / total) * 100) : 0;
+  totalCountEl.textContent = total;
+  reviewedCountEl.textContent = r;
+  remainingCountEl.textContent = total - r;
+  progressFill.style.width = pct + '%';
+  progressPercent.textContent = pct + '%';
+}
+
+function showToast(icon, text) {
+  toastIcon.textContent = icon;
+  toastText.textContent = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function toggleReview(id) {
+  if (reviewed.has(id)) reviewed.delete(id);
+  else reviewed.add(id);
+  save();
+  updateStats();
+  render();
+}
+
+function extractTheoristsFromHtml(html) {
+  const scriptRegex = /const\s+baseTheorists\s*=\s*(\[[\s\S]*?\]);/m;
+  const match = html.match(scriptRegex);
+  if (match && match[1]) {
+    try {
+      const data = new Function('return ' + match[1])();
+      if (Array.isArray(data) && data.length > 0) return data;
+    } catch(e) {}
+  }
+  return null;
+}
+
+async function performUpdate() {
+  if (updateBtn.disabled || updateBtn.classList.contains('loading')) return;
+
+  updateBtn.classList.add('loading');
+  updateBtn.disabled = true;
+  updateLabel.textContent = 'جاري التحديث';
+
+  try {
+    const response = await fetch(SOURCE_URL + '?v=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('فشل الاتصال');
+
+    const html = await response.text();
+    const newData = extractTheoristsFromHtml(html);
+    if (!newData) throw new Error('لا توجد بيانات');
+
+    const currentIds = new Set(theorists.map(t => t.id));
+    const newItems = newData.filter(t => !currentIds.has(t.id));
+
+    if (newItems.length > 0) {
+      const marked = newItems.map(t => ({...t, isNew: true}));
+      theorists = [...theorists, ...marked];
+      localStorage.setItem(CACHE_KEY, JSON.stringify(theorists));
+
+      updateBtn.classList.remove('loading');
+      updateBtn.classList.add('done');
+      updateIcon.textContent = '✓';
+      updateLabel.textContent = 'تم';
+      pendingBadge.style.display = 'none';
+
+      updateStats();
+      render();
+      showToast('✓', `أُضيف ${newItems.length} منظر(ين) جديد(ين)`);
+    } else {
+      updateBtn.classList.remove('loading');
+      updateBtn.classList.add('done');
+      updateIcon.textContent = '✓';
+      updateLabel.textContent = 'محدّث';
+      showToast('●', 'البيانات محدّثة بالفعل');
+    }
+
+    setTimeout(() => {
+      updateBtn.classList.remove('done');
+      updateBtn.disabled = false;
+      updateIcon.textContent = '↻';
+      updateLabel.textContent = 'تحديث';
+    }, 2500);
+
+  } catch (err) {
+    console.error(err);
+    updateBtn.classList.remove('loading');
+    updateBtn.disabled = false;
+    updateIcon.textContent = '↻';
+    updateLabel.textContent = 'تحديث';
+    showToast('!', 'تعذر الاتصال');
+    setTimeout(() => window.location.reload(), 1500);
+  }
+}
+
+function getNewIds() {
+  return new Set(theorists.filter(t => t.isNew).map(t => t.id));
+}
+
+function render() {
+  const q = currentSearch.trim().toLowerCase();
+  const newIds = getNewIds();
+
+  const filtered = theorists.filter(t => {
+    let matchesFilter = false;
+    if (currentFilter === 'all') matchesFilter = true;
+    else if (currentFilter === 'reviewed') matchesFilter = reviewed.has(t.id);
+    else if (currentFilter === 'pending') matchesFilter = !reviewed.has(t.id);
+    else if (currentFilter === 'new') matchesFilter = newIds.has(t.id);
+
+    const matchesSearch = !q ||
+      t.ar.toLowerCase().includes(q) ||
+      t.en.toLowerCase().includes(q) ||
+      t.c.toLowerCase().includes(q) ||
+      String(t.id) === q;
+    return matchesFilter && matchesSearch;
+  });
+
+  displayCount.textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = filtered.map(t => {
+    const isRev = reviewed.has(t.id);
+    const isNew = !!t.isNew;
+    const classes = ['card'];
+    if (isRev) classes.push('reviewed');
+    if (isNew) classes.push('new-entry');
+    return `
+      <div class="${classes.join(' ')}">
+        ${isNew ? '<span class="new-badge">جديد</span>' : ''}
+        <div class="stamp">تمت<br>المراجعة</div>
+        <div class="card-head">
+          <div class="num">${String(t.id).padStart(2, '0')}</div>
+          <div class="names">
+            <div class="name-ar">${t.ar}</div>
+            <div class="name-en">${t.en}</div>
+          </div>
+        </div>
+        <div class="contribution">${t.c}</div>
+        <div class="card-foot">
+          <button class="review-btn" data-id="${t.id}">
+            <span class="check">${isRev ? '✓' : ''}</span>
+            <span>${isRev ? 'تمت المراجعة' : 'وضع علامة مراجعة'}</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('.review-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleReview(parseInt(btn.dataset.id)));
+  });
+}
+
+searchInput.addEventListener('input', e => {
+  currentSearch = e.target.value;
+  render();
+});
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+updateBtn.addEventListener('click', performUpdate);
+
+clearBtn.addEventListener('click', () => {
+  if (confirm('هل تريد فعلاً إعادة تعيين جميع علامات المراجعة؟')) {
+    reviewed.clear();
+    save();
+    updateStats();
+    render();
+    showToast('↺', 'تم إعادة التعيين');
+  }
+});
+
+const newIds = getNewIds();
+if (newIds.size > 0) {
+  pendingBadge.style.display = 'inline-flex';
+  pendingText.textContent = `${newIds.size} عنصر جديد`;
+} else {
+  pendingBadge.style.display = 'none';
+}
+
+updateStats();
+render();
+</script>
+
+</body>
+</html>
     position: sticky;
     top: 0;
     z-index: 100;
